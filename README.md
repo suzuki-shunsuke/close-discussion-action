@@ -22,7 +22,7 @@ You can also post a comment.
 ```yaml
 - uses: suzuki-shunsuke/close-discussion-action@main
   with:
-    number: 10 # Required. Discussion Number
+    number: 10 # id or number is required.
 ```
 
 ## Inputs / Outputs

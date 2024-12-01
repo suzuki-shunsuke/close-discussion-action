@@ -1,9 +1,12 @@
 name: Close Discussions
 description: Close and lock an GitHub Discussions
 inputs:
+  id:
+    description: Discussion ID. Either id or number is required
+    required: false
   number:
-    description: Discussion Number
-    required: true
+    description: Discussion Number. Either id or number is required
+    required: false
   github_token:
     description: GitHub Access Token
     required: false
@@ -29,6 +32,37 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Validate is_lock
+      if: inputs.is_lock != 'true' && inputs.is_lock != 'false'
+      shell: bash
+      run: |
+        echo "::error:: is_lock must be true or false" >&2
+        exit 1
+    - name: Validate is_close
+      if: inputs.is_close != 'true' && inputs.is_close != 'false'
+      shell: bash
+      run: |
+        echo "::error:: is_close must be true or false" >&2
+        exit 1
+    - name: Validate close_reason
+      if: inputs.close_reason != 'RESOLVED' && inputs.close_reason != 'OUTDATED' && inputs.close_reason != 'DUPLICATE'
+      shell: bash
+      run: |
+        echo "::error:: close_reason must be RESOLVED, OUTDATED, or DUPLICATE" >&2
+        exit 1
+    - name: Validate repo
+      if: inputs.repo != '' && !contains(inputs.repo, '/')
+      shell: bash
+      run: |
+        echo "::error:: repo must be a repository full name <owner>/<repo>" >&2
+        exit 1
+    - name: Validate id and number
+      if: inputs.id == '' && inputs.number == ''
+      shell: bash
+      run: |
+        echo "::error:: Either id or number must be set" >&2
+        exit 1
+
     - name: Get the discussion id
       id: id
       shell: bash
@@ -36,7 +70,13 @@ runs:
         GITHUB_TOKEN: ${{inputs.github_token}}
         REPO: ${{inputs.repo}}
         NUMBER: ${{inputs.number}}
+        DID: ${{inputs.id}}
       run: |
+        if [ -n "$DID" ]; then
+          echo "id=$DID" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+
         repo=${REPO:-$GITHUB_REPOSITORY}
         owner=${repo%/*}
         name=${repo#*/}
