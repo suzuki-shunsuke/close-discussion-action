@@ -57,7 +57,7 @@ runs:
         echo "::error:: repo must be a repository full name <owner>/<repo>" >&2
         exit 1
     - name: Validate id and number
-      if: inputs.id == '' && input.number == ''
+      if: inputs.id == '' && inputs.number == ''
       shell: bash
       run: |
         echo "::error:: Either id or number must be set" >&2
