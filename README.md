@@ -29,7 +29,7 @@ You can also post a comment.
 
 [Workflow](.github/workflows/close-discussion.yaml)
 
-This workflow is useful if you want to stop creating new discussions while keeping existing discussions.
+This workflow is useful if you want to prevent new discussions from being created while keeping existing discussions.
 
 ## Inputs / Outputs
 
