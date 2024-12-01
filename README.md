@@ -25,6 +25,12 @@ You can also post a comment.
     number: 10 # id or number is required.
 ```
 
+### :bulb: Close new discussions automatically
+
+[Workflow](.github/workflows/close-discussion.yaml)
+
+This workflow is useful if you want to stop creating new discussions while keeping existing discussions.
+
 ## Inputs / Outputs
 
 Please see [action.yaml](action.yaml)
