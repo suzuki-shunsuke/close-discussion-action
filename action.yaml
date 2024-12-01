@@ -1,5 +1,9 @@
-name: Close Discussions
-description: Close and lock an GitHub Discussions
+name: Close and Lock Discussions
+description: Close and lock a GitHub Discussions
+author: Shunsuke Suzuki
+branding:
+  icon: lock
+  color: black
 inputs:
   id:
     description: Discussion ID. Either id or number is required
