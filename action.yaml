@@ -20,9 +20,9 @@ inputs:
     required: false
     default: "true"
   close_reason:
-    description: The reason why the discussion is being closed. One of resolved, outdated, or duplicate.
+    description: The reason why the discussion is being closed. One of RESOLVED, OUTDATED, or DUPLICATE.
     required: false
-    default: "resolved"
+    default: "RESOLVED"
   message:
     description: If the message is set, the message is posted to the discussion as a comment
     required: false
