@@ -1,0 +1,122 @@
+name: Close Discussions
+description: Close and lock an GitHub Discussions
+inputs:
+  number:
+    description: Discussion Number
+    required: true
+  github_token:
+    description: GitHub Access Token
+    required: false
+    default: ${{github.token}}
+  repo:
+    description: Discussion Repository
+    required: false
+  is_close:
+    description: If true, discussion is closed
+    required: false
+    default: "true"
+  is_lock:
+    description: If true, discussion is locked
+    required: false
+    default: "true"
+  close_reason:
+    description: The reason why the discussion is being closed. One of RESOLVED, OUTDATED, or DUPLICATE.
+    required: false
+    default: "RESOLVED"
+  message:
+    description: If the message is set, the message is posted to the discussion as a comment
+    required: false
+runs:
+  using: composite
+  steps:
+    - name: Get the discussion id
+      id: id
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{inputs.github_token}}
+        REPO: ${{inputs.repo}}
+        NUMBER: ${{inputs.number}}
+      run: |
+        repo=${REPO:-$GITHUB_REPOSITORY}
+        owner=${repo%/*}
+        name=${repo#*/}
+        id=$(gh api graphql \
+          -F "owner=$owner" \
+          -F "name=$name" \
+          -F "number=$NUMBER" \
+          -q '.data.repository.discussion.id' \
+          -f query='
+        query($name: String!, $owner: String!, $number: Int!) {
+          repository(owner: $owner, name: $name) {
+            discussion(number: $number) {
+              id
+            }
+          }
+        }')
+        echo "id=$id" >> "$GITHUB_OUTPUT"
+
+    - name: Post a comment to the discussion
+      shell: bash
+      if: inputs.message != ''
+      env:
+        GITHUB_TOKEN: ${{inputs.github_token}}
+        BODY: ${{inputs.message}}
+        DID: ${{steps.id.outputs.id}}
+      run: |
+        gh api graphql \
+          -F "id=$DID" \
+          -F "body=$BODY" \
+          -f query='
+        mutation($id: ID!, $body: String!) {
+          addDiscussionComment(input: {
+            discussionId: $id,
+            body: $body,
+          }) {
+            comment {
+              id
+            }
+          }
+        }'
+
+    - name: Close the discussion
+      shell: bash
+      if: fromJSON(inputs.is_close)
+      env:
+        GITHUB_TOKEN: ${{inputs.github_token}}
+        DID: ${{steps.id.outputs.id}}
+        REASON: ${{inputs.close_reason}}
+      run: |
+        gh api graphql \
+          -F "id=$DID" \
+          -F "reason=$REASON" \
+          -f query='
+        mutation($id: ID!, $reason: DiscussionCloseReason!) {
+          closeDiscussion(input: {
+            discussionId: $id,
+            reason: $reason,
+          }) {
+            discussion {
+              id
+            }
+          }
+        }'
+
+    - name: Lock the discussion
+      if: fromJSON(inputs.is_lock)
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{inputs.github_token}}
+        DID: ${{steps.id.outputs.id}}
+      run: |
+        gh api graphql \
+          -F "id=$DID" \
+          -f query='
+        mutation($id: ID!) {
+          lockLockable(input: {
+            lockableId: $id,
+          }) {
+            lockedRecord {
+              locked
+            }
+          }
+        }'
