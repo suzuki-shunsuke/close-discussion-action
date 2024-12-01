@@ -1,0 +1,21 @@
+---
+name: test
+on:
+  discussion:
+    types: [created]
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      discussions: write
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      - uses: ./
+        with:
+          id: ${{github.event.discussion.id}}
+          message: |
+            This discussion is closed because we stopped using GitHub Discussions.
+            We don't accept new discussions anymore.
+            Please create an issue instead.
+            For details, please see https://github.com/suzuki-shunsuke/suzuki-shunsuke/issues/2
