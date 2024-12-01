@@ -2,6 +2,12 @@
 
 GitHub Action to close and lock GitHub Discussions.
 
+<img width="254" alt="image" src="https://github.com/user-attachments/assets/d76e3b8a-61a4-4fba-80c8-e9a47a908a94">
+
+You can also post a comment.
+
+<img width="1285" alt="image" src="https://github.com/user-attachments/assets/3690aacd-90ba-4429-acfe-c2add2e3d639">
+
 [action.yaml](action.yaml)
 
 ## Requirements
