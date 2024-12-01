@@ -1,9 +1,12 @@
 name: Close Discussions
 description: Close and lock an GitHub Discussions
 inputs:
+  id:
+    description: Discussion ID. Either id or number is required
+    required: false
   number:
-    description: Discussion Number
-    required: true
+    description: Discussion Number. Either id or number is required
+    required: false
   github_token:
     description: GitHub Access Token
     required: false
@@ -36,7 +39,18 @@ runs:
         GITHUB_TOKEN: ${{inputs.github_token}}
         REPO: ${{inputs.repo}}
         NUMBER: ${{inputs.number}}
+        DID: ${{inputs.id}}
       run: |
+        if [ -n "$DID" ]; then
+          echo "id=$DID" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+
+        if [ -z "$NUMBER" ]; then
+          echo "::error:: Either id or number is required" >&2
+          exit 1
+        fi
+
         repo=${REPO:-$GITHUB_REPOSITORY}
         owner=${repo%/*}
         name=${repo#*/}
