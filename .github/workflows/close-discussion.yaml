@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       - uses: ./
         with:
-          id: ${{github.event.discussion.id}}
+          id: ${{github.event.discussion.node_id}}
           message: |
             This discussion is closed because we stopped using GitHub Discussions.
             We don't accept new discussions anymore.
